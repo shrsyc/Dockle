@@ -26,14 +26,27 @@ jobs:
           sudo dpkg -i dockle.deb
           rm dockle.deb
 
-      - name: Run Dockle Manually
+      - name: Run Dockle and Show PASS/SKIP Summary
         run: |
-          dockle \
-          --exit-code 1 \
+          echo "🔍 Running Dockle Scan..."
+
+          # Run Dockle and save output
+          dockle --exit-code 1 \
+          --format list \
           --ignore CIS-DI-0001 \
           --accept-key NODE_VERSION \
           --accept-key YARN_VERSION \
           --accept-key OPENSSL_ARCH \
           --accept-key GNUPGHOME \
-          built-image:scan
+          built-image:scan | tee dockle-output.txt
+
+          # Parse only PASS and SKIP
+          PASS_COUNT=$(grep -c "^PASS" dockle-output.txt || true)
+          SKIP_COUNT=$(grep -c "^SKIP" dockle-output.txt || true)
+
+          echo "------------------------------------"
+          echo "✅ PASS:   $PASS_COUNT"
+          echo "⏭️  SKIP:   $SKIP_COUNT"
+          echo "------------------------------------"
+
 
