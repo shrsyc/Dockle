@@ -1,17 +1,23 @@
 name: check
+
 on:
   push:
+
 jobs:
   build:
-    name: Build
+    name: Build and Scan Docker Image
     runs-on: ubuntu-24.04
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build an image from Dockerfile
+
+      - name: Enable Docker Content Trust and Build Image
         run: |
+          export DOCKER_CONTENT_TRUST=1
           docker build -t built-image:scan .
-      - name: Run dockle
+
+      - name: Run Dockle Scan
         uses: goodwithtech/dockle-action@main
         with:
           image: 'built-image:scan'
@@ -19,3 +25,8 @@ jobs:
           exit-code: '1'
           exit-level: 'warn'
           ignore: 'CIS-DI-0001,DKL-DI-0006'
+          accept-key: |
+            NODE_VERSION
+            YARN_VERSION
+            OPENSSL_ARCH
+            GNUPGHOME
