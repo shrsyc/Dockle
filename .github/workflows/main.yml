@@ -30,7 +30,6 @@ jobs:
         run: |
           dockle \
           --exit-code 1 \
-          --format list \
           --ignore CIS-DI-0001 \
           --accept-key NODE_VERSION \
           --accept-key YARN_VERSION \
