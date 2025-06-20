@@ -12,21 +12,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Enable Docker Content Trust and Build Image
+      - name: Enable Docker Content Trust and Build Docker Image
         run: |
           export DOCKER_CONTENT_TRUST=1
           docker build -t built-image:scan .
 
-      - name: Run Dockle Scan
-        uses: goodwithtech/dockle-action@v0.4.15
-        with:
-          image: 'built-image:scan'
-          format: 'list'
-          exit-code: '1'
-          exit-level: 'warn'
-          ignore: 'CIS-DI-0001,DKL-DI-0006'
-          accept-keys: |
-            NODE_VERSION
-            YARN_VERSION
-            OPENSSL_ARCH
-            GNUPGHOME
+      - name: Install Dockle
+        run: |
+          curl -sSfL https://github.com/goodwithtech/dockle/releases/latest/download/dockle_$(uname -s)_$(uname -m).tar.gz | tar zxv
+          sudo mv dockle /usr/local/bin/
+
+      - name: Run Dockle Manually
+        run: |
+          dockle \
+            --exit-level warn \
+            --exit-code 1 \
+            --format list \
+            --accept-key NODE_VERSION \
+            --accept-key YARN_VERSION \
+            --accept-key OPENSSL_ARCH \
+            --accept-key GNUPGHOME \
+            built-image:scan
