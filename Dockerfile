@@ -9,5 +9,7 @@ COPY <<EOF hello.js
 console.log("Hello from Node.js");
 EOF
 
+HEALTHCHECK CMD curl --fail http://localhost:3000 || exit 1
+
 # Command to run the script
 CMD ["node", "hello.js"]
