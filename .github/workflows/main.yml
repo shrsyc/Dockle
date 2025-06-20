@@ -18,7 +18,7 @@ jobs:
           docker build -t built-image:scan .
 
       - name: Run Dockle Scan
-        uses: goodwithtech/dockle-action@main
+        uses: goodwithtech/dockle-action@v0.4.15
         with:
           image: 'built-image:scan'
           format: 'list'
